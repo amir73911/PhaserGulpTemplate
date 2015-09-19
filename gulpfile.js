@@ -93,4 +93,4 @@ gulp.task('openbrowser', function() {
     opn( 'http://' + server.host + ':' + server.port + '/build' );
 });
 
-gulp.task('default', ['build', 'webserver', 'watch']);
+gulp.task('default', ['build', 'webserver', 'watch', 'openbrowser']);
