@@ -1,0 +1,22 @@
+{
+  "name": "PhaserGulpTemplate",
+  "version": "1.0.0",
+  "description": "PhaserGulpTemplate",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Amir Gafurov <gafurovamir@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.8.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "*",
+    "gulp-imagemin": "*",
+    "gulp-uglify": "*",
+    "gulp-watch": "*",
+    "imagemin-pngquant": "*",
+    "opn": "*",
+    "rimraf": "*"
+  }
+}
