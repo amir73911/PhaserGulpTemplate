@@ -46,7 +46,7 @@ gulp.task('html:build', function () {
 
 gulp.task('js:build', function () {
     gulp.src(path.src.js)
-        .pipe(concat('app.min.js'))
+        .pipe(concat('app.js'))
         .pipe(uglify())
         .pipe(gulp.dest(path.build.js));
 });
