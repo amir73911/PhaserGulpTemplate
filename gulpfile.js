@@ -13,19 +13,25 @@ var path = {
     build: {
         html: 'build/',
         js: 'build/js/',
-        img: 'build/images/'
+        img: 'build/assets/images/'
+    },
+    dev: {
+        html: 'dev/',
+        js: 'dev/js/',
+        img: 'dev/assets/images/'
     },
     src: {
         html: 'src/index.html',
         js: 'src/js/**/*.js',
-        img: 'src/images/**/*.*'
+        img: 'src/assets/images/**/*.*'
     },
     watch: {
         html: 'src/index.html',
         js: 'src/js/**/*.js',
-        img: 'src/images/**/*.*'
+        img: 'src/assets/images/**/*.*'
     },
-    clean: './build'
+    cleanBuild: './build',
+    cleanDev: './dev'
 };
 
 var server = {
@@ -35,28 +41,25 @@ var server = {
 
 gulp.task('html:build', function () {
     gulp.src(path.src.html)
-        .pipe(gulp.dest(path.build.html))
-        .pipe(connect.reload());
+        .pipe(gulp.dest(path.build.html));
 });
 
 gulp.task('js:build', function () {
     gulp.src(path.src.js)
-        .pipe(concat('app.js'))
-        .pipe(uglify()) //Сожмем наш js
-        .pipe(gulp.dest(path.build.js)) //Выплюнем готовый файл в build
-        .pipe(connect.reload()); //И перезагрузим сервер
+        .pipe(concat('app.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest(path.build.js));
 });
 
 gulp.task('image:build', function () {
-    gulp.src(path.src.img) //Выберем наши картинки
-        .pipe(imagemin({ //Сожмем их
+    gulp.src(path.src.img)
+        .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()],
             interlaced: true
         }))
-        .pipe(gulp.dest(path.build.img)) //И бросим в build
-        .pipe(connect.reload());
+        .pipe(gulp.dest(path.build.img));
 });
 
 gulp.task('build', [
@@ -65,15 +68,46 @@ gulp.task('build', [
     'image:build'
 ]);
 
+gulp.task('html:dev', function () {
+    gulp.src(path.src.html)
+        .pipe(gulp.dest(path.dev.html))
+        .pipe(connect.reload());
+});
+
+gulp.task('js:dev', function () {
+    gulp.src([path.src.js])
+        .pipe(concat('app.js'))
+        .pipe(gulp.dest(path.dev.js))
+        .pipe(connect.reload());
+});
+
+gulp.task('image:dev', function () {
+    gulp.src(path.src.img)
+        .pipe(imagemin({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()],
+            interlaced: true
+        }))
+        .pipe(gulp.dest(path.dev.img))
+        .pipe(connect.reload());
+});
+
+gulp.task('dev', [
+    'html:dev',
+    'js:dev',
+    'image:dev'
+]);
+
 gulp.task('watch', function(){
     watch([path.watch.html], function(event, cb) {
-        gulp.start('html:build');
+        gulp.start('html:dev');
     });
     watch([path.watch.js], function(event, cb) {
-        gulp.start('js:build');
+        gulp.start('js:dev');
     });
     watch([path.watch.img], function(event, cb) {
-        gulp.start('image:build');
+        gulp.start('image:dev');
     });
 });
 
@@ -86,11 +120,12 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('clean', function (cb) {
-    rimraf(path.clean, cb);
+    rimraf(path.cleanBuild);
+    rimraf(path.cleanDev);
 });
 
 gulp.task('openbrowser', function() {
-    opn( 'http://' + server.host + ':' + server.port + '/build' );
+    opn( 'http://' + server.host + ':' + server.port + '/dev' );
 });
 
-gulp.task('default', ['build', 'webserver', 'watch', 'openbrowser']);
+gulp.task('default', ['dev', 'webserver', 'watch', 'openbrowser']);
