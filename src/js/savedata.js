@@ -1,23 +1,17 @@
-// Store the necessary data as object properties
-var SaveData = {};
-
-function SaveGameData(gameName) {
+function SaveGameData(name, gameData) {
 
     if (typeof(Storage) !== "undefined") {
 
-        localStorage.setItem(gameName + '_SaveData_49353464236244863490683', JSON.stringify(SaveData));
+        localStorage.setItem(name + '_SaveData', JSON.stringify(gameData));
     }
-};
+}
 
-function LoadGameData(gameName) {
+function LoadGameData(name) {
 
     if (typeof(Storage) !== "undefined") {
 
-        var data = localStorage.getItem(gameName + '_SaveData_49353464236244863490683');
+        var data = localStorage.getItem(name + '_SaveData');
 
-        if (data != null && data != undefined) {
-
-            SaveData = JSON.parse(data);
-        }
+        return (data != null && data != undefined) ? JSON.parse(data) : null;
     }
-};
+}

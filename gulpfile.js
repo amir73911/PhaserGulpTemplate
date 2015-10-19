@@ -13,22 +13,33 @@ var path = {
     build: {
         html: 'build/',
         js: 'build/js/',
-        img: 'build/assets/images/'
+        data: "build/data/",
+        img: 'build/assets/images/',
+        sound: 'build/assets/sound/'
     },
     dev: {
         html: 'dev/',
         js: 'dev/js/',
-        img: 'dev/assets/images/'
+        data: "dev/data/",
+        img: 'dev/assets/images/',
+        sound: 'dev/assets/sound/'
     },
     src: {
         html: 'src/index.html',
-        js: 'src/js/**/*.js',
-        img: 'src/assets/images/**/*.*'
+        js: {
+            vendor: 'src/js/vendor/*.js',
+            app: 'src/js/app/**/*.js'
+        },
+        data: "src/data/*.json",
+        img: 'src/assets/images/**/*.*',
+        sound: 'src/assets/sound/**/*.*'
     },
     watch: {
         html: 'src/index.html',
         js: 'src/js/**/*.js',
-        img: 'src/assets/images/**/*.*'
+        data: 'src/data/*.json',
+        img: 'src/assets/images/**/*.*',
+        sound: 'src/assets/sound/**/*.*'
     },
     cleanBuild: './build',
     cleanDev: './dev'
@@ -45,10 +56,20 @@ gulp.task('html:build', function () {
 });
 
 gulp.task('js:build', function () {
-    gulp.src(path.src.js)
+    gulp.src([path.src.js.vendor])
+        .pipe(uglify())
+        .pipe(gulp.dest(path.build.js));
+
+    gulp.src([path.src.js.app])
         .pipe(concat('app.js'))
         .pipe(uglify())
         .pipe(gulp.dest(path.build.js));
+});
+
+gulp.task('data:build', function () {
+    gulp.src([path.src.data])
+        .pipe(gulp.dest(path.build.data));
+
 });
 
 gulp.task('image:build', function () {
@@ -62,10 +83,18 @@ gulp.task('image:build', function () {
         .pipe(gulp.dest(path.build.img));
 });
 
+gulp.task('sounds:build', function () {
+    gulp.src([path.src.sound])
+        .pipe(gulp.dest(path.build.sound));
+
+});
+
 gulp.task('build', [
     'html:build',
     'js:build',
-    'image:build'
+    'data:build',
+    'image:build',
+    'sounds:build'
 ]);
 
 gulp.task('html:dev', function () {
@@ -75,9 +104,18 @@ gulp.task('html:dev', function () {
 });
 
 gulp.task('js:dev', function () {
-    gulp.src([path.src.js])
+    gulp.src([path.src.js.vendor])
+        .pipe(gulp.dest(path.dev.js));
+    gulp.src([path.src.js.app])
         .pipe(concat('app.js'))
         .pipe(gulp.dest(path.dev.js))
+        .pipe(connect.reload());
+
+});
+
+gulp.task('data:dev', function () {
+    gulp.src([path.src.data])
+        .pipe(gulp.dest(path.dev.data))
         .pipe(connect.reload());
 });
 
@@ -93,10 +131,18 @@ gulp.task('image:dev', function () {
         .pipe(connect.reload());
 });
 
+gulp.task('sounds:dev', function () {
+    gulp.src([path.src.sound])
+        .pipe(gulp.dest(path.dev.sound))
+        .pipe(connect.reload());
+});
+
 gulp.task('dev', [
     'html:dev',
     'js:dev',
-    'image:dev'
+    'data:dev',
+    'image:dev',
+    'sounds:dev'
 ]);
 
 gulp.task('watch', function(){
@@ -106,8 +152,14 @@ gulp.task('watch', function(){
     watch([path.watch.js], function(event, cb) {
         gulp.start('js:dev');
     });
+    watch([path.watch.data], function(event, cb) {
+        gulp.start('data:dev');
+    });
     watch([path.watch.img], function(event, cb) {
         gulp.start('image:dev');
+    });
+    watch([path.watch.sound], function(event, cb) {
+        gulp.start('sounds:dev');
     });
 });
 

@@ -1,24 +1,22 @@
-function PreloaderState() {};
+function PreloaderState() {
+}
 
 PreloaderState.prototype = {
 
     // Create the preloader bar and start loading the game assets
-    preload:
-        function () {
+    preload: function () {
 
 
     },
 
     // Update the loading bar
-    loadUpdate:
-        function () {
+    loadUpdate: function () {
 
 
     },
 
     // Go to the gameplay/menu state
-    create:
-        function () {
+    create: function () {
 
     }
 };
